@@ -12,6 +12,7 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewM
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.BindSensorButtonViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreIconViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreInfoButtonViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreStatsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleLifecycle
 import com.masselis.tpmsadvanced.feature.main.usecase.ListenBoundTyreUseCase
@@ -163,6 +164,7 @@ public interface TyreBindings {
         internal val tyreIconViewModel: () -> TyreIconViewModelImpl,
         internal val tyreStatsViewModel: () -> TyreStatsViewModelImpl,
         internal val bindSensorButtonViewModel: BindSensorButtonViewModelImpl.Factory,
+        internal val tyreInfoButtonViewModel: TyreInfoButtonViewModelImpl.Factory
     )
 
     @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
@@ -170,8 +172,16 @@ public interface TyreBindings {
         private val TyreComponent.internal
             get() = (this as TyreBindings).internal
 
-        internal fun TyreComponent.TyreIconViewModel() = internal.tyreIconViewModel()
-        internal fun TyreComponent.TyreStatsViewModel() = internal.tyreStatsViewModel()
-        internal val TyreComponent.BindSensorButtonViewModel get() = internal.bindSensorButtonViewModel
+        context(comp: TyreComponent)
+        internal fun TyreIconViewModel() = comp.internal.tyreIconViewModel()
+
+        context(comp: TyreComponent)
+        internal fun TyreStatsViewModel() = comp.internal.tyreStatsViewModel()
+
+        context(comp: TyreComponent)
+        internal val BindSensorButtonViewModel get() = comp.internal.bindSensorButtonViewModel
+
+        context(comp: TyreComponent)
+        internal val TyreInfoButtonViewModel get() = comp.internal.tyreInfoButtonViewModel
     }
 }

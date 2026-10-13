@@ -46,7 +46,6 @@ import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import kotlinx.coroutines.delay
@@ -64,7 +63,7 @@ internal fun Tyre(
     vehicleComponent: Lazy<VehicleComponent> = lazyOf(LocalVehicleComponent.current),
     viewModel: TyreIconViewModel = vehicleComponent.value
         .TyreComponent(location)
-        .let { viewModel(it.keyed()) { it.TyreIconViewModel() } },
+        .viewModel { TyreIconViewModel() },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Tyre(state, snackbarHostState, modifier)
