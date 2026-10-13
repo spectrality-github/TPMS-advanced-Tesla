@@ -30,14 +30,12 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorBut
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 
 @Composable
 internal fun BindSensorButton(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: BindSensorButtonViewModel = vehicleComponent
+    viewModel: BindSensorButtonViewModel = LocalVehicleComponent.current
         .TyreComponent(location)
         .viewModel { BindSensorButtonViewModel(createSavedStateHandle()) }
 ) {
