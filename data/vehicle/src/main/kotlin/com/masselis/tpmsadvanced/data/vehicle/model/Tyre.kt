@@ -18,7 +18,8 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
         override val temperature: Temperature,
         override val battery: UShort,
         override val isAlarm: Boolean,
-        override val infos: Set<ManufacturerSpecificInfo> = emptySet()
+        override val infos: Set<ManufacturerSpecificInfo> = emptySet(),
+        override val macAddress: String? = null,
     ) : Tyre {
         public constructor(
             timestamp: Double,
@@ -43,6 +44,7 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
         override val isAlarm: Boolean,
         override val infos: Set<ManufacturerSpecificInfo> = emptySet(),
         val location: Location,
+        override val macAddress: String? = null,
     ) : Tyre {
 
         public constructor(
@@ -76,7 +78,8 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
             source.battery,
             source.isAlarm,
             source.infos,
-            location
+            location,
+            source.macAddress
         )
     }
 }

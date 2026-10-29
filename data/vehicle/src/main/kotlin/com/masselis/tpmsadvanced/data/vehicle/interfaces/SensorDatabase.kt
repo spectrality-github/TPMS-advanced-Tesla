@@ -18,6 +18,7 @@ public class SensorDatabase internal constructor(
 ) {
     private val vehicleQueries = database.vehicleQueries
     private val queries = database.sensorQueries
+    private val macAddressQueries = database.sensorMacAddressQueries
 
     /**
      * This method insert a sensor for a vehicle. If the sensor is already saved for an other
@@ -40,7 +41,7 @@ public class SensorDatabase internal constructor(
             "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
         }
         queries.deleteByVehicleAndLocation(vehicleId, sensor.location)
-        queries.upsert(sensor.id, sensor.location, vehicleId)
+        queries.upsert(sensor.id, sensor.location, sensor.macAddress, vehicleId)
     }
 
     public suspend fun deleteFromVehicle(vehicleId: UUID): Unit = withContext(IO) {
@@ -64,6 +65,40 @@ public class SensorDatabase internal constructor(
         .selectByVehicleAndLocation(vehicleId, location, mapper)
         .asOneOrNull()
 
+    public fun selectMacAddressByVehicleAndLocation(
+        vehicleId: UUID,
+        location: Location,
+    ): QueryOneOrNull<String> = macAddressQueries
+        .selectByVehicleAndLocation(vehicleId, location)
+        .asOneOrNull()
+
+    public suspend fun saveMacAddress(
+        vehicleId: UUID,
+        location: Location,
+        macAddress: String,
+    ): Unit = withContext(IO) {
+        database.transaction {
+            val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
+            require(kind.locations.any { it == location }) {
+                @Suppress("MaxLineLength")
+                "MAC address points to a location which is not handled by the vehicle kind. Kind: $kind, location: $location"
+            }
+            require(
+                macAddressQueries.selectLocationsUsingMacAddress(
+                    vehicleId,
+                    macAddress,
+                    location,
+                    vehicleId,
+                    macAddress,
+                    location
+                ).executeAsList().isEmpty()
+            ) {
+                "MAC address is already assigned to another sensor location."
+            }
+            macAddressQueries.upsert(vehicleId, location, macAddress)
+        }
+    }
+
     public fun countByVehicle(vehicleId: UUID): QueryOne<Long> = queries
         .countByVehicle(vehicleId)
         .asOne()
@@ -85,8 +120,9 @@ public class SensorDatabase internal constructor(
             id: Int,
             location: Location,
             vehicleId: UUID,
-        ) -> Sensor = { id, location, _ ->
-            Sensor(id, location)
+            macAddress: String?,
+        ) -> Sensor = { id, location, _, macAddress ->
+            Sensor(id, location, macAddress)
         }
     }
 }

@@ -16,24 +16,46 @@ import kotlinx.coroutines.plus
 internal interface SensorBindingUseCase {
 
     fun boundSensor(): StateFlow<Sensor?>
+    fun boundSensor(location: Location): StateFlow<Sensor?>
+    fun configuredMacAddress(location: Location): StateFlow<String?>
     fun boundVehicle(sensor: Sensor): Flow<Vehicle?>
 
     suspend fun bind(sensor: Sensor)
+    suspend fun saveMacAddress(location: Location, macAddress: String)
 
     class Impl(
         private val currentVehicle: Vehicle,
         private val vehicleDatabase: VehicleDatabase,
         private val sensorDatabase: SensorDatabase,
-        currentLocation: Location,
-        scope: CoroutineScope,
+        private val currentLocation: Location,
+        private val scope: CoroutineScope,
     ) : SensorBindingUseCase {
 
         private val boundSensor = sensorDatabase.selectByVehicleAndLocation(
             currentVehicle.uuid,
             currentLocation
         ).asStateFlow(scope + IO, Eagerly)
+        private val boundSensors = mutableMapOf(currentLocation to boundSensor)
+        private val configuredMacAddresses = mutableMapOf<Location, StateFlow<String?>>()
 
         override fun boundSensor(): StateFlow<Sensor?> = boundSensor
+
+        override fun boundSensor(location: Location): StateFlow<Sensor?> = synchronized(boundSensors) {
+            boundSensors.getOrPut(location) {
+                sensorDatabase
+                    .selectByVehicleAndLocation(currentVehicle.uuid, location)
+                    .asStateFlow(scope + IO, Eagerly)
+            }
+        }
+
+        override fun configuredMacAddress(location: Location): StateFlow<String?> =
+            synchronized(configuredMacAddresses) {
+                configuredMacAddresses.getOrPut(location) {
+                    sensorDatabase
+                        .selectMacAddressByVehicleAndLocation(currentVehicle.uuid, location)
+                        .asStateFlow(scope + IO, Eagerly)
+                }
+            }
 
         override fun boundVehicle(sensor: Sensor) = vehicleDatabase
             .selectBySensorId(sensor.id)
@@ -41,11 +63,17 @@ internal interface SensorBindingUseCase {
 
         override suspend fun bind(sensor: Sensor) =
             sensorDatabase.upsert(sensor, currentVehicle.uuid)
+
+        override suspend fun saveMacAddress(location: Location, macAddress: String) =
+            sensorDatabase.saveMacAddress(currentVehicle.uuid, location, macAddress)
     }
 
     object NoOp : SensorBindingUseCase {
         override fun boundSensor(): StateFlow<Sensor?> = MutableStateFlow(null)
+        override fun boundSensor(location: Location): StateFlow<Sensor?> = MutableStateFlow(null)
+        override fun configuredMacAddress(location: Location): StateFlow<String?> = MutableStateFlow(null)
         override fun boundVehicle(sensor: Sensor): Flow<Vehicle?> = MutableStateFlow(null)
         override suspend fun bind(sensor: Sensor) {}
+        override suspend fun saveMacAddress(location: Location, macAddress: String) {}
     }
 }

@@ -60,7 +60,11 @@ internal class BindDialogViewModelImpl(
 
     override fun bind(location: Location) {
         viewModelScope.launch {
-            bindSensorToVehicleUseCase.bind(vehicleUuid, Sensor(tyre.sensorId, location), tyre)
+            bindSensorToVehicleUseCase.bind(
+                vehicleUuid,
+                Sensor(tyre.sensorId, location, tyre.macAddress),
+                tyre
+            )
         }
     }
 }

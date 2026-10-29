@@ -9,7 +9,9 @@
 
 # TPMS-advanced
 
-Android app for Bluetooth Low Energy TPMS sensors made by the manufacturers Sysgration, Pecham and Bekubee.
+Android app for Bluetooth Low Energy TPMS sensors made by the manufacturers Sysgration, Pecham, Bekubee, Michelin Track Connect and Tesla.
+
+Sensor MAC addresses can also be entered manually: open the sensor selector next to a wheel and save the address. Each MAC address can be assigned to only one sensor location on a vehicle.
 
 <img src="https://user-images.githubusercontent.com/6769250/192485450-354d941b-47e7-4078-bede-5c28ace85b30.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485472-8c2c60fd-da54-4703-99db-3113e1339676.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485477-24ef7b35-8b37-4c40-b98e-e7025980d3f6.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485485-493ee137-6d88-43fc-b6fa-e50a31c96696.png" width="200">
 

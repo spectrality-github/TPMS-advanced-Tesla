@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel
 
 import android.os.Parcelable
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,10 @@ internal interface BindSensorButtonViewModel {
     }
 
     val stateFlow: StateFlow<State>
+    val locations: List<Location>
 
-    fun bind()
+    fun boundSensor(location: Location): StateFlow<Sensor?>
+    fun configuredMacAddress(location: Location): StateFlow<String?>
+    fun bind(sensor: Sensor)
+    fun saveMacAddress(location: Location, macAddress: String)
 }

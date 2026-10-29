@@ -25,6 +25,14 @@ internal class LocatedTyreScannerUseCase(
                 .value
                 .takeIf { tyreRecord.sensorId == it?.id }
                 ?.let { sensor -> Tyre.Located(tyreRecord, sensor.location) }
+                ?: tyreRecord.macAddress
+                    ?.takeIf {
+                        it.equals(
+                            sensorBindingUseCase.configuredMacAddress(currentLocation).value,
+                            ignoreCase = true
+                        )
+                    }
+                    ?.let { Tyre.Located(tyreRecord, currentLocation) }
             // Cannot compute location from a bound sensor, let's take a look at the tyreRecord itself
             // to see if it matches the current location
                 ?: when (tyreRecord) {

@@ -186,6 +186,7 @@ internal class TeslaGatt(
                             ?.takeIf { it.maxPressure - it.minPressure >= SUSPICIOUS_PRESSURE_DELTA }
                             ?.let { setOf(SuspiciousTeslaFixedTemperature(it.temperature.toFloat().celsius)) }
                             ?: emptySet(),
+                        macAddress = device.address.uppercase(),
                     )
                 }
                 ?.also { emit(it) }

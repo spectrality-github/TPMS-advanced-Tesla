@@ -1,0 +1,27 @@
+import com.masselis.tpmsadvanced.data.vehicle.model.Location;
+import java.util.UUID;
+
+CREATE TABLE SensorMacAddress(
+    vehicleId TEXT AS UUID NOT NULL,
+    location INTEGER AS Location NOT NULL,
+    macAddress TEXT NOT NULL,
+    PRIMARY KEY(vehicleId, location),
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
+);
+
+upsert:
+INSERT INTO SensorMacAddress (vehicleId, location, macAddress)
+VALUES (?, ?, ?)
+ON CONFLICT(vehicleId, location) DO
+UPDATE SET macAddress=excluded.macAddress;
+
+selectByVehicleAndLocation:
+SELECT macAddress FROM SensorMacAddress
+WHERE vehicleId = ? AND location = ?;
+
+selectLocationsUsingMacAddress:
+SELECT location FROM SensorMacAddress
+WHERE vehicleId = ? AND macAddress COLLATE NOCASE = ? AND location != ?
+UNION
+SELECT location FROM Sensor
+WHERE vehicleId = ? AND macAddress COLLATE NOCASE = ? AND location != ?;

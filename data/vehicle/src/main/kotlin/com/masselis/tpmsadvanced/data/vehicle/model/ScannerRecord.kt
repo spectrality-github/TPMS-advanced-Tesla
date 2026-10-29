@@ -9,6 +9,7 @@ public sealed interface ScannerRecord : Parcelable {
     public val rssi: Int
     public val sensorId: Int
     public val infos: Set<ManufacturerSpecificInfo>
+    public val macAddress: String? get() = null
 
     @Parcelize
     public data class TeslaId(
@@ -17,6 +18,7 @@ public sealed interface ScannerRecord : Parcelable {
         override val sensorId: Int,
         override val infos: Set<ManufacturerSpecificInfo> = emptySet(),
         val device: BluetoothDevice,
+        override val macAddress: String = device.address,
     ) : ScannerRecord {
         public constructor(
             timestamp: Double,

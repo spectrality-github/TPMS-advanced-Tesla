@@ -10,6 +10,7 @@ import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.database.SQLiteOpenHelperUseCase
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.SensorMacAddress
 import com.masselis.tpmsadvanced.data.vehicle.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
@@ -163,6 +164,7 @@ public object Bindings {
             instantAdapter,
         ),
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
+        SensorMacAddressAdapter = SensorMacAddress.Adapter(uuidAdapter, sensorLocationAdapter),
         TyreAdapter = Tyre.Adapter(
             IntColumnAdapter,
             IntColumnAdapter,

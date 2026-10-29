@@ -111,6 +111,7 @@ internal class BluetoothLeScannerImpl(
                 ?: RawWicarlink(it)
                 ?: RawBekubeeTpms(it)
                 ?: RawSysgration(it)
+                ?: RawMichelinTrackConnect(it)
                 ?: RawTeslaIdOnly(it)
                 ?: run {
                     logger.d("Sensor not parsed. Scan bytes: ${it.scanRecord?.bytes}")
@@ -159,7 +160,8 @@ internal class BluetoothLeScannerImpl(
         )
 
         private val MANUFACTURER_IDS = listOf(
-            RawTeslaIdOnly.MANUFACTURER_ID
+            RawTeslaIdOnly.MANUFACTURER_ID,
+            RawMichelinTrackConnect.MANUFACTURER_ID,
         )
     }
 }

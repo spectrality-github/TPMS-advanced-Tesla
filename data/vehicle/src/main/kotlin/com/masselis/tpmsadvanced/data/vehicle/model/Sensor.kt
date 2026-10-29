@@ -7,4 +7,5 @@ import kotlinx.parcelize.Parcelize
 public data class Sensor(
     val id: Int,
     val location: Location,
+    val macAddress: String? = null,
 ) : Parcelable

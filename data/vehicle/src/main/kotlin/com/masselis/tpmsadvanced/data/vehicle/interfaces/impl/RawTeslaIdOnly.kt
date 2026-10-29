@@ -38,7 +38,7 @@ internal data class RawTeslaIdOnly private constructor(
     private val manufacturerData: ByteArray,
 ) : Raw {
 
-    fun id() = device.address.hashCode()
+    fun id() = device.address.uppercase().hashCode()
 
     override fun asTyre(): ScannerRecord = ScannerRecord.TeslaId(now(), rssi, id(), device)
 

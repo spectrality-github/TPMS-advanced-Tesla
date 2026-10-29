@@ -3,6 +3,8 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel.State
@@ -38,6 +40,10 @@ internal class BindSensorButtonViewModelImpl(
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE", State.Empty)
     override val stateFlow = mutableStateFlow.asStateFlow()
+    override val locations = locationOrder.filter { it in vehicleFlow.value.kind.locations }
+
+    override fun boundSensor(location: Location) = sensorBindingUseCase.boundSensor(location)
+    override fun configuredMacAddress(location: Location) = sensorBindingUseCase.configuredMacAddress(location)
 
     init {
         searchSensorToBindUseCase()
@@ -61,12 +67,24 @@ internal class BindSensorButtonViewModelImpl(
             .launchIn(viewModelScope)
     }
 
-    override fun bind() {
-        viewModelScope.launch {
-            val state = stateFlow.value
-            if (state !is State.RequestBond)
-                return@launch
-            sensorBindingUseCase.bind(state.foundSensor)
-        }
+    override fun bind(sensor: Sensor) {
+        viewModelScope.launch { sensorBindingUseCase.bind(sensor) }
+    }
+
+    override fun saveMacAddress(location: Location, macAddress: String) {
+        viewModelScope.launch { sensorBindingUseCase.saveMacAddress(location, macAddress) }
+    }
+
+    private companion object {
+        private val locationOrder: List<Location> = listOf(
+            Location.Wheel.FRONT_LEFT,
+            Location.Wheel.FRONT_RIGHT,
+            Location.Wheel.REAR_LEFT,
+            Location.Wheel.REAR_RIGHT,
+            Location.Axle.FRONT,
+            Location.Axle.REAR,
+            Location.Side.LEFT,
+            Location.Side.RIGHT,
+        )
     }
 }
