@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
 import android.bluetooth.BluetoothProfile.STATE_CONNECTED
+import android.bluetooth.BluetoothStatusCodes.SUCCESS
 import android.content.Context
 import android.os.Build
 import co.touchlab.kermit.Logger
@@ -197,7 +198,7 @@ internal class TeslaGatt(
     @Suppress("DEPRECATION")
     private fun BluetoothGatt.writeIndicationDescriptor(descriptor: BluetoothGattDescriptor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            check(writeDescriptor(descriptor, ENABLE_INDICATION_VALUE) == GATT_SUCCESS) {
+            check(writeDescriptor(descriptor, ENABLE_INDICATION_VALUE) == SUCCESS) {
                 "Unable to enable indications"
             }
         else

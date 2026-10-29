@@ -1,4 +1,4 @@
-@file:Suppress("NAME_SHADOWING")
+@file:Suppress("NAME_SHADOWING", "TooManyFunctions")
 
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
